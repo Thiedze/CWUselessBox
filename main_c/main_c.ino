@@ -12,11 +12,11 @@
  Logic:
  if switchTop == HIGH     then move arm up
  if switchTop == LOW      then move arm down
- if switchButtom == HIGH  then stop move arm
+ if switchBottom == HIGH  then stop move arm
  
  */
 
-int switchButtom = 2;            
+int switchBottom = 2;            
 int switchTop = 3;
 int sensitivity = 200;
 
@@ -26,7 +26,7 @@ void setup() {
 
   Serial.begin(9600);
 
-  pinMode( switchButtom, INPUT_PULLUP);
+  pinMode( switchBottom, INPUT_PULLUP);
   pinMode( switchTop, INPUT_PULLUP);
   pinMode( led, OUTPUT);
 }
@@ -54,18 +54,22 @@ void move_arm_stop() {
 
 void loop() {
 
-  if (digitalRead(switchTop) == HIGH) { 
+  int switchTopState = digitalRead(switchTop);
+  int switchBottomState = digitalRead(switchBottom);
+
+  if (switchTopState == HIGH) { 
     move_arm_up();
   } 
-  else if (digitalRead(switchButtom) == LOW && digitalRead(switchTop) == LOW) { 
+  else if (switchBottomState == LOW && switchTopState == LOW) { 
     move_arm_down();
   } 
-  else  if (digitalRead(switchButtom) == HIGH) { 
+  else  if (switchBottomState == HIGH) { 
     move_arm_stop();
   }
 
   delay(sensitivity);
 }
+
 
 
 
