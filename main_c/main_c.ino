@@ -57,18 +57,20 @@ void loop() {
   int switchTopState = digitalRead(switchTop);
   int switchBottomState = digitalRead(switchBottom);
 
+  if (switchBottomState == HIGH) { 
+    move_arm_stop();
+  }
+
   if (switchTopState == HIGH) { 
     move_arm_up();
   } 
   else if (switchBottomState == LOW && switchTopState == LOW) { 
     move_arm_down();
   } 
-  else  if (switchBottomState == HIGH) { 
-    move_arm_stop();
-  }
 
   delay(sensitivity);
 }
+
 
 
 
