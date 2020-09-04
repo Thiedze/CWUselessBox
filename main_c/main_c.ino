@@ -16,60 +16,142 @@
  
  */
 
-int switchBottom = 2;            
-int switchTop = 3;
-int sensitivity = 200;
+const static int DOWN = -1;
+const static int UP = 1;
+const static int STOPP = 0;
 
-int led = 13;
+const int switchBottom = 2;            
+const int switchTop = 3;
+
+int motorSpeedUp = 255;
+int motorSpeedDown = 255;
+
+const int moterSpeedPin = 6;
+const int in1 = 5;
+const int in2 = 4;
+
+const int led = 13;
+
+
+volatile int ledState = LOW;
+volatile int switchBottomState = LOW;
+volatile int switchTopState = LOW;
+
+volatile int moveDirection = STOPP;
+
+volatile int currentEffect = 0;
+
+int effect_stop_motion[15] = {
+  HIGH, 100, motorSpeedUp, LOW, 2000, motorSpeedUp, HIGH, 150, motorSpeedUp, LOW, 1000, motorSpeedUp, HIGH, 200, motorSpeedUp};
+
+int effect_normal[3] = {
+  HIGH, 400, motorSpeedUp};
+
 
 void setup() {
 
   Serial.begin(9600);
+  while (!Serial);
 
   pinMode( switchBottom, INPUT_PULLUP);
   pinMode( switchTop, INPUT_PULLUP);
-  pinMode( led, OUTPUT);
+
+  attachInterrupt(0, switchBottomTriggert, CHANGE);
+  attachInterrupt(1, switchTopTriggert, CHANGE);
+
+  pinMode(led, OUTPUT);
+
+  pinMode(moterSpeedPin, OUTPUT);
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
 }
 
-void blink_led(int blink_delay) {
-  for (int round = 0; round < 10; round++)  {
-    digitalWrite(led, HIGH);
-    delay(blink_delay);
-    digitalWrite(led, LOW);
-    delay(blink_delay);
+// Interrupt switch bottom
+void switchBottomTriggert() {
+  switchBottomState = digitalRead(switchBottom); 
+};
+
+
+//Interrupt switch top
+void switchTopTriggert() {
+  int currentState = digitalRead(switchTop);
+
+  if (switchTopState == LOW && currentState == HIGH) { 
+    moveDirection = UP;
+  } 
+  else if (switchTopState == HIGH && currentState == LOW) { 
+    moveDirection = DOWN;
   }
+
+  switchTopState = currentState;
 }
 
-void move_arm_up() {
-  blink_led(50);
+void move_arm_up(int current_effect[], int array_size) {
+  digitalWrite(in1, LOW);
+
+  for (int index = 0; index < array_size; index = index + 3) {
+    analogWrite(moterSpeedPin, current_effect[index+2]);
+    digitalWrite(in2, current_effect[index+0]);
+    delay(current_effect[index+1]);
+  }
+
 }
 
 void move_arm_down() {
-  blink_led(200);
+  analogWrite(moterSpeedPin, motorSpeedDown);
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
 }
 
 void move_arm_stop() {
-  digitalWrite(led, LOW);   
+  analogWrite(moterSpeedPin, 0);
 }
 
 void loop() {
-
-  int switchTopState = digitalRead(switchTop);
-  int switchBottomState = digitalRead(switchBottom);
 
   if (switchBottomState == HIGH) { 
     move_arm_stop();
   }
 
-  if (switchTopState == HIGH) { 
-    move_arm_up();
-  } 
-  else if (switchBottomState == LOW && switchTopState == LOW) { 
-    move_arm_down();
+  if (moveDirection == UP) {
+    if (currentEffect == 0) {
+      move_arm_up(effect_normal, sizeof(effect_normal) / sizeof(int));
+    }
+    else if (currentEffect == 1) {
+      move_arm_up(effect_stop_motion, sizeof(effect_stop_motion) / sizeof(int));
+    }
+
+    currentEffect += 1;
+    if (currentEffect > 1) {
+      currentEffect = 0;
+    }
   } 
 
-  delay(sensitivity);
+  if (switchBottomState == LOW && moveDirection == DOWN) {
+    move_arm_down();
+  }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
