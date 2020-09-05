@@ -1,18 +1,10 @@
 /*
-
+ 
  switchTop (left) = LOW
  switchTop (right) = HIGH
  
  switchButtom (pressed) = HIGH
  switchButtom (released) = LOW
- 
- led (on) = HIGH
- led (off) = LOW
- 
- Logic:
- if switchTop == HIGH     then move arm up
- if switchTop == LOW      then move arm down
- if switchBottom == HIGH  then stop move arm
  
  */
 
@@ -29,8 +21,6 @@ const int moter_speed_pin = 6;
 
 volatile int switch_bottom_state = HIGH;
 volatile int switch_top_state = LOW;
-
-volatile int move_direction = STOP;
 
 
 void setup() {
