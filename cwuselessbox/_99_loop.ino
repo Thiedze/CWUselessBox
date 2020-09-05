@@ -1,5 +1,8 @@
+int ir_sensor_value = 0;
+boolean was_enenmy_out_of_range = false;
+
 void loop() {  
-  
+
   if(is_mode_running == false && switch_bottom_state == HIGH && switch_top_state == HIGH) {
     select_mode();
     is_mode_running = true;
@@ -23,6 +26,20 @@ void loop() {
     Serial.println("down");
   } 
 
+  if (mode[mode_index] == DISTANCE) {
+    ir_sensor_value = analogRead(ir_sensor);
+    
+    if (was_enenmy_out_of_range == true && ir_sensor_value < 900) {
+      mode_index += 3;
+      was_enenmy_out_of_range = false;
+    }
+    
+    if (ir_sensor_value > 1000) {
+      was_enenmy_out_of_range = true;
+    }
+    
+  } 
+
   if (is_mode_running == true && mode_index >= mode_size) {
 
     selected_mode += 1;
@@ -40,6 +57,9 @@ void loop() {
   }
 
 }
+
+
+
 
 
 

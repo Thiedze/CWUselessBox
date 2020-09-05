@@ -11,12 +11,15 @@
 const static int DOWN = -1;
 const static int UP = 1;
 const static int STOP = 0;
+const static int DISTANCE = 42;
 
 const int switch_bottom = 2;            
 const int switch_top = 3;
 const int motor_control_2 = 4;
 const int motor_control_1 = 5;
 const int moter_speed_pin = 6;
+
+const int ir_sensor = A0;
 
 
 volatile int switch_bottom_state = HIGH;
@@ -38,6 +41,7 @@ void setup() {
   pinMode(motor_control_1, OUTPUT);
   pinMode(motor_control_2, OUTPUT);
   
+  pinMode(ir_sensor, INPUT);
 }
 
 
