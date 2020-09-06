@@ -12,8 +12,11 @@ int normal[9] = {
 
 int distance[12] = {
   DISTANCE, 0, 255, UP, 400, 255, DOWN, 350, 255, STOP, 100, 0  };
+  
+int follow[12] = {
+  FOLLOW, 0, 255, UP, 400, 255, DOWN, 350, 255, STOP, 100, 0  };
 
-int mode_count = 4;
+int mode_count = 5;
 int mode_index = 0;
 int mode_size = 0;
 
@@ -25,9 +28,9 @@ int *mode = {
 
 void select_mode() {
   if (selected_mode == 0) {
-    mode_size = sizeof(distance) / sizeof(int);
-    mode = distance;
-    Serial.println("mode: distance");      
+    mode_size = sizeof(follow) / sizeof(int);
+    mode = follow;
+    Serial.println("mode: follow");      
   }
   else if (selected_mode == 1) {
     mode_size = sizeof(normal) / sizeof(int);
@@ -48,6 +51,11 @@ void select_mode() {
     mode_size = sizeof(slow) / sizeof(int);
     mode = slow;
     Serial.println("mode: slow");      
+  }
+  else if (selected_mode == 5) {
+    mode_size = sizeof(distance) / sizeof(int);
+    mode = distance;
+    Serial.println("mode: distance");      
   }
 }
 
